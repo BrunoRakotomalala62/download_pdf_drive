@@ -11,12 +11,15 @@ def get_drive_files():
     if not os.path.exists(DRIVE_DIR):
         return files
     
-    for filename in os.listdir(DRIVE_DIR):
-        if filename.endswith('.txt'):
-            path = os.path.join(DRIVE_DIR, filename)
+    # On trie les fichiers par nom pour garantir que l'index "1" correspond toujours au même fichier
+    filenames = sorted([f for f in os.listdir(DRIVE_DIR) if f.endswith('.txt')])
+    
+    for filename in filenames:
+        path = os.path.join(DRIVE_DIR, filename)
+        try:
             with open(path, 'r', encoding='utf-8') as f:
                 content = f.read()
-                # Extraction simple par regex
+                # Extraction par regex
                 name_match = re.search(r'nom\s*:\s*(.*)', content)
                 uid_match = re.search(r'uid\s*:\s*"(.*)"', content)
                 if name_match and uid_match:
@@ -24,6 +27,8 @@ def get_drive_files():
                         'nom': name_match.group(1).strip(),
                         'uid': uid_match.group(1).strip()
                     })
+        except Exception:
+            continue
     return files
 
 @app.route('/recherche')
@@ -46,7 +51,7 @@ def download():
     
     file_id = None
     
-    # Si c'est un numéro
+    # Si c'est un numéro (index dans la liste triée)
     if pdf_param.isdigit():
         all_files = get_drive_files()
         idx = int(pdf_param) - 1
@@ -56,7 +61,6 @@ def download():
             return "Numéro de fichier invalide", 404
     else:
         # Sinon on traite comme un ID ou une URL
-        # Extraction ID de l'URL ou utilisation directe de l'UID
         match = re.search(r'/file/d/([a-zA-Z0-9_-]+)', pdf_param)
         if match:
             file_id = match.group(1)
@@ -75,7 +79,7 @@ def download():
 
 @app.route('/')
 def index():
-    return "API Drive: /recherche?pdf=... et /download?pdf=NUMERO"
+    return "API Drive active. Utilisez /recherche?pdf=... ou /download?pdf=NUMERO"
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
