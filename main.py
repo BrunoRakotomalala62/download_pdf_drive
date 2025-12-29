@@ -1,6 +1,7 @@
 import os
 import re
 import requests
+import json
 from flask import Flask, request, redirect, jsonify
 from bs4 import BeautifulSoup
 
@@ -84,63 +85,51 @@ def scraper_video():
         headers = {
             'User-Agent': 'Mozilla/5.0 (Linux; Android 10; SM-G981B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.162 Mobile Safari/537.36',
             'Referer': 'https://filmboom.top/',
-            'Origin': 'https://filmboom.top'
+            'Accept-Language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7'
         }
         
-        # 1. Obtenir la page principale
         response = requests.get(url, headers=headers, timeout=15)
         html = response.text
         
-        # 2. Chercher des patterns d'API Moviebox ou des liens .mp4 dans le JS
-        # On cherche des URLs qui pourraient être l'API de streaming
-        api_patterns = [
-            r'https?://[^\s"\']+/api/video/getUrl[^\s"\']*',
-            r'https?://[^\s"\']+/get_video_info[^\s"\']*',
-            r'https?://[^\s"\']+\.mp4[^\s"\']*',
-            r'https?://[^\s"\']+\.m3u8[^\s"\']*'
-        ]
+        # Tentative d'extraction Moviebox : On cherche les données JSON injectées dans la page
+        # Souvent dans window.__INITIAL_STATE__ ou via des regex sur les IDs
         
-        found_links = []
-        for pattern in api_patterns:
-            matches = re.findall(pattern, html)
-            found_links.extend(matches)
+        # 1. Recherche directe de liens .mp4 ou .m3u8 dans le code source
+        links = re.findall(r'https?://[^\s"\']+\.(?:mp4|m3u8)[^\s"\']*', html)
+        if links:
+            return redirect(links[0])
             
-        # 3. Chercher dans les fichiers JS externes liés
-        soup = BeautifulSoup(html, 'html.parser')
-        scripts = soup.find_all('script', src=True)
-        for script in scripts:
-            js_url = script['src']
-            if not js_url.startswith('http'):
-                # Gérer les chemins relatifs
-                base_url = '/'.join(url.split('/')[:3])
-                js_url = base_url + js_url if js_url.startswith('/') else '/'.join(url.split('/')[:-1]) + '/' + js_url
-            
+        # 2. Recherche de l'ID de ressource et appel à l'API présumée
+        res_id_match = re.search(r'id=(\d+)', url)
+        if res_id_match:
+            res_id = res_id_match.group(1)
+            # Hypothèse d'API Moviebox (basé sur les patterns courants)
+            api_url = f"https://filmboom.top/api/video/getUrl?id={res_id}&type=movie"
             try:
-                js_res = requests.get(js_url, headers=headers, timeout=5)
-                for pattern in api_patterns:
-                    matches = re.findall(pattern, js_res.text)
-                    found_links.extend(matches)
+                api_res = requests.get(api_url, headers=headers, timeout=5)
+                data = api_res.json()
+                if data.get('data', {}).get('url'):
+                    return redirect(data['data']['url'])
             except:
-                continue
+                pass
 
-        # Nettoyage et priorité au .mp4
-        if found_links:
-            # Priorité aux liens .mp4 directs
-            mp4_links = [l for l in found_links if '.mp4' in l.lower()]
-            if mp4_links:
-                return redirect(mp4_links[0])
-            
-            # Sinon le premier lien trouvé
-            return redirect(found_links[0])
+        # 3. Analyse des scripts pour trouver des variables de configuration
+        soup = BeautifulSoup(html, 'html.parser')
+        for script in soup.find_all('script'):
+            if script.string:
+                # Recherche de patterns de liens de streaming
+                m = re.search(r'["\'](https?://[^\s"\']+\.mp4[^\s"\']*)["\']', script.string)
+                if m:
+                    return redirect(m.group(1))
 
-        return "Impossible de trouver le lien direct. Le site utilise probablement une protection avancée ou un lecteur dynamique.", 404
+        return "La vidéo est protégée ou nécessite une session active. Essayez de maintenir le doigt sur la vidéo dans votre navigateur pour utiliser l'option de téléchargement native.", 404
         
     except Exception as e:
-        return f"Erreur lors de l'analyse : {str(e)}", 500
+        return f"Erreur : {str(e)}", 500
 
 @app.route('/')
 def index():
-    return "API Drive & Scraper active. /recherche, /download, /scraper_video"
+    return "API Drive & Scraper active."
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
