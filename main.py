@@ -81,43 +81,66 @@ def scraper_video():
         return "Missing url parameter", 400
     
     try:
-        # Note: Scraping modern sites often requires JavaScript execution.
-        # This basic scraper looks for <video> tags or mp4 links in the static HTML.
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            'User-Agent': 'Mozilla/5.0 (Linux; Android 10; SM-G981B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.162 Mobile Safari/537.36',
+            'Referer': 'https://filmboom.top/',
+            'Origin': 'https://filmboom.top'
         }
-        response = requests.get(url, headers=headers, timeout=10)
-        soup = BeautifulSoup(response.text, 'html.parser')
         
-        # 1. Try to find <video> tags
-        video_tags = soup.find_all('video')
-        for video in video_tags:
-            if video.get('src'):
-                return redirect(video.get('src'))
-            source = video.find('source')
-            if source and source.get('src'):
-                return redirect(source.get('src'))
+        # 1. Obtenir la page principale
+        response = requests.get(url, headers=headers, timeout=15)
+        html = response.text
         
-        # 2. Try to find links ending in .mp4
-        mp4_links = soup.find_all('a', href=re.compile(r'\.mp4'))
-        if mp4_links:
-            return redirect(mp4_links[0].get('href'))
+        # 2. Chercher des patterns d'API Moviebox ou des liens .mp4 dans le JS
+        # On cherche des URLs qui pourraient être l'API de streaming
+        api_patterns = [
+            r'https?://[^\s"\']+/api/video/getUrl[^\s"\']*',
+            r'https?://[^\s"\']+/get_video_info[^\s"\']*',
+            r'https?://[^\s"\']+\.mp4[^\s"\']*',
+            r'https?://[^\s"\']+\.m3u8[^\s"\']*'
+        ]
+        
+        found_links = []
+        for pattern in api_patterns:
+            matches = re.findall(pattern, html)
+            found_links.extend(matches)
             
-        # 3. Look inside scripts (common for hidden players)
-        scripts = soup.find_all('script')
+        # 3. Chercher dans les fichiers JS externes liés
+        soup = BeautifulSoup(html, 'html.parser')
+        scripts = soup.find_all('script', src=True)
         for script in scripts:
-            if script.string:
-                match = re.search(r'(https?://[^\s"\']+\.mp4[^\s"\']*)', script.string)
-                if match:
-                    return redirect(match.group(1))
+            js_url = script['src']
+            if not js_url.startswith('http'):
+                # Gérer les chemins relatifs
+                base_url = '/'.join(url.split('/')[:3])
+                js_url = base_url + js_url if js_url.startswith('/') else '/'.join(url.split('/')[:-1]) + '/' + js_url
+            
+            try:
+                js_res = requests.get(js_url, headers=headers, timeout=5)
+                for pattern in api_patterns:
+                    matches = re.findall(pattern, js_res.text)
+                    found_links.extend(matches)
+            except:
+                continue
 
-        return "Vidéo non trouvée sur la page (elle est peut-être chargée par JavaScript)", 404
+        # Nettoyage et priorité au .mp4
+        if found_links:
+            # Priorité aux liens .mp4 directs
+            mp4_links = [l for l in found_links if '.mp4' in l.lower()]
+            if mp4_links:
+                return redirect(mp4_links[0])
+            
+            # Sinon le premier lien trouvé
+            return redirect(found_links[0])
+
+        return "Impossible de trouver le lien direct. Le site utilise probablement une protection avancée ou un lecteur dynamique.", 404
+        
     except Exception as e:
-        return f"Erreur lors du scraping: {str(e)}", 500
+        return f"Erreur lors de l'analyse : {str(e)}", 500
 
 @app.route('/')
 def index():
-    return "API active. /recherche, /download, /scraper_video"
+    return "API Drive & Scraper active. /recherche, /download, /scraper_video"
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
