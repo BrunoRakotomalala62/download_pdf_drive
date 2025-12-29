@@ -11,7 +11,6 @@ def get_drive_files():
     if not os.path.exists(DRIVE_DIR):
         return files
     
-    # On trie les fichiers par nom pour garantir que l'index "1" correspond toujours au même fichier
     filenames = sorted([f for f in os.listdir(DRIVE_DIR) if f.endswith('.txt')])
     
     for filename in filenames:
@@ -19,13 +18,13 @@ def get_drive_files():
         try:
             with open(path, 'r', encoding='utf-8') as f:
                 content = f.read()
-                # Extraction par regex
-                name_match = re.search(r'nom\s*:\s*(.*)', content)
-                uid_match = re.search(r'uid\s*:\s*"(.*)"', content)
-                if name_match and uid_match:
+                # On cherche toutes les paires nom/uid dans le fichier
+                # On utilise multiline pour gérer les formats variés
+                entries = re.findall(r'nom\s*:\s*(.*?)\s*uid\s*:\s*"(.*?)"', content, re.DOTALL)
+                for name, uid in entries:
                     files.append({
-                        'nom': name_match.group(1).strip(),
-                        'uid': uid_match.group(1).strip()
+                        'nom': name.strip(),
+                        'uid': uid.strip()
                     })
         except Exception:
             continue
@@ -51,7 +50,6 @@ def download():
     
     file_id = None
     
-    # Si c'est un numéro (index dans la liste triée)
     if pdf_param.isdigit():
         all_files = get_drive_files()
         idx = int(pdf_param) - 1
@@ -60,7 +58,6 @@ def download():
         else:
             return "Numéro de fichier invalide", 404
     else:
-        # Sinon on traite comme un ID ou une URL
         match = re.search(r'/file/d/([a-zA-Z0-9_-]+)', pdf_param)
         if match:
             file_id = match.group(1)
