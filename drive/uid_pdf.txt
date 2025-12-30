@@ -2,3 +2,9 @@ nom : Sujet_Maths_TA_2015
 uid : "14ucSn8sIjJnfbTzRD9cyNiDrLPKEp6AH"
 nom : Florette
 uid : "17IrzVrm7Uu9LWBW42z90cImVskNF3E9b"
+nom: Lesona physique 3eme
+uid :
+"19Jp48zDSqTBpv6ZuX4tPGTG8IVbJNM64"
+nom : Sujet Types et corrigés Francais 3eme
+uid :
+"19OMW6r_YRWMYWSe_0bz4nCXlTU_5Q2PO"
