@@ -15,9 +15,9 @@ ax_text1 = plt.subplot2grid((2, 2), (0, 0)) # Haut Gauche
 ax_text1.axis('off')
 
 texte_ex1 = (
-    r"$\bf{EXERCICE\ 1\ :\ CORRECTION\ DÉTAILLÉE}$" + "\n\n"
+    r"$\bf{\underline{EXERCICE\ 1\ :\ CORRECTION\ DÉTAILLÉE}}$" + "\n\n"
     r"$\bf{1.\ Ensemble\ de\ définition}$" + "\n"
-    r"Pour $\ln(x+1)$, il faut $x+1 > 0 \Leftrightarrow x > -1$. Donc $\bf{D_f = ]-1 ; +\infty[}$." + "\n\n"
+    r"Pour $\ln(x+1)$, il faut $x+1 > 0 \iff x > -1$. Donc $\bf{D_f = ]-1 ; +\infty[}$." + "\n\n"
     r"$\bf{2.\ Limite\ en\ -1^+}$" + "\n"
     r"$\lim_{x \to -1^+} (1-x) = 2$ et $\lim_{x \to -1^+} \ln(x+1) = -\infty$. D'où $\bf{\lim f(x) = -\infty}$." + "\n"
     r"$\rightarrow$ Asymptote verticale d'équation $\bf{x = -1}$." + "\n\n"
@@ -90,14 +90,14 @@ ax_text2 = plt.subplot2grid((2, 2), (1, 0)) # Bas Gauche
 ax_text2.axis('off')
 
 texte_ex2 = (
-    r"$\bf{EXERCICE\ 2\ :\ CORRECTION\ DÉTAILLÉE}$" + "\n\n"
+    r"$\bf{\underline{EXERCICE\ 2\ :\ CORRECTION\ DÉTAILLÉE}}$" + "\n\n"
     r"$\bf{1.\ Domaine}$ : $D_f = \mathbb{R}$ (polynôme et exponentielle)." + "\n\n"
     r"$\bf{2.\ Limite\ en\ -\infty}$" + "\n"
     r"$f(x) = e^x - xe^x - 1$. Or $\lim xe^x = 0$ et $\lim e^x = 0$." + "\n"
     r"$\lim f(x) = 0 - 0 - 1 = \bf{-1}$. Asymptote horizontale $\bf{y = -1}$." + "\n\n"
     r"$\bf{3.\ Limite\ en\ +\infty}$ : $\lim (1-x)=-\infty, \lim e^x=+\infty \Rightarrow \bf{-\infty}$." + "\n\n"
     r"$\bf{4.\ Intersection\ (D)\ y=-1}$" + "\n"
-    r"$(1-x)e^x - 1 = -1 \Leftrightarrow (1-x)e^x = 0 \Leftrightarrow x = 1$. Point $\bf{A(1 ; -1)}$." + "\n\n"
+    r"$(1-x)e^x - 1 = -1 \iff (1-x)e^x = 0 \iff x = 1$. Point $\bf{A(1 ; -1)}$." + "\n\n"
     r"$\bf{5.\ Dérivée\ et\ Variations}$" + "\n"
     r"$f'(x) = -1\cdot e^x + (1-x)e^x = e^x(-1+1-x) = \bf{-xe^x}$." + "\n"
     r"Comme $e^x > 0$, le signe est celui de $-x$." + "\n"
@@ -156,3 +156,4 @@ ax_plot2.legend(fontsize=11)
 filename = "correction_complete_organisee.jpg"
 plt.savefig(filename, dpi=200, bbox_inches='tight')
 print(f"L'image '{filename}' a été générée avec succès avec les tableaux complétés.")
+plt.show()
