@@ -109,11 +109,15 @@ def generer_page_numerique():
     # Sauvegarde
     plt.savefig("page_numerique_finale.png", dpi=300, bbox_inches='tight')
     print("Page numérique (texte + schéma) générée : page_numerique_finale.png")
+    plt.show()
 
 # --- EXÉCUTION ---
 
-# Etape 1 : Créer l'effet scanner (Nécessite le fichier image original)
+# Remplacez 'votre_image.jpg' par le nom réel de votre fichier image
+# Si vous n'avez pas l'image locale, commentez la ligne suivante
 try:
+    # Etape 1 : Créer l'effet scanner (Nécessite le fichier image original)
+    # Assurez-vous d'avoir l'image dans le même dossier et changez le nom ci-dessous
     transformer_en_scanner('image_originale.jpg', 'image_scanner_sortie.jpg')
 except Exception as e:
     print(f"L'étape scanner a été sautée (Image non trouvée ou erreur): {e}")
