@@ -1,158 +1,37 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
-# Configuration de la figure (Grande taille A4 allongé pour tout contenir)
-fig = plt.figure(figsize=(22, 32))
-# Espacement entre les sous-graphiques
-plt.subplots_adjust(left=0.05, right=0.95, top=0.96, bottom=0.03, wspace=0.15, hspace=0.25)
+# 1. Définition des données
+# On commence très près de 0 (0.005) pour montrer l'asymptote sans erreur mathématique
+x = np.linspace(0.005, 4, 1000) 
+y = 2*x + 1 - np.log(x)
 
-# ==============================================================================
-#                               EXERCICE 1
-# ==============================================================================
+# 2. Création du graphique
+plt.figure(figsize=(10, 6))
 
-# --- Zone de Texte (Correction écrite) ---
-ax_text1 = plt.subplot2grid((2, 2), (0, 0)) # Haut Gauche
-ax_text1.axis('off')
+# Tracer la fonction f(x)
+plt.plot(x, y, label=r'$f(x) = 2x + 1 - \ln(x)$', color='blue', linewidth=2)
 
-texte_ex1 = (
-    r"$\bf{EXERCICE\ 1\ :\ CORRECTION\ DÉTAILLÉE}$" + "\n\n"
-    r"$\bf{1.\ Ensemble\ de\ définition}$" + "\n"
-    r"Pour $\ln(x+1)$, il faut $x+1 > 0 \Leftrightarrow x > -1$. Donc $\bf{D_f = ]-1 ; +\infty[}$." + "\n\n"
-    r"$\bf{2.\ Limite\ en\ -1^+}$" + "\n"
-    r"$\lim_{x \to -1^+} (1-x) = 2$ et $\lim_{x \to -1^+} \ln(x+1) = -\infty$. D'où $\bf{\lim f(x) = -\infty}$." + "\n"
-    r"$\rightarrow$ Asymptote verticale d'équation $\bf{x = -1}$." + "\n\n"
-    r"$\bf{3.\ Limite\ en\ +\infty}$" + "\n"
-    r"On écrit $f(x) = (x+1)[\frac{2}{x+1} - 1 + \frac{\ln(x+1)}{x+1}]$. Par croissances comparées," + "\n"
-    r"les fractions tendent vers 0. Il reste $(+\infty) \times (-1) = \bf{-\infty}$." + "\n\n"
-    r"$\bf{4.\ Dérivée\ et\ Variations}$" + "\n"
-    r"$f'(x) = -1 + \frac{1}{x+1} = \frac{-x-1+1}{x+1} = \bf{\frac{-x}{x+1}}$." + "\n"
-    r"Sur $]-1; +\infty[$, le signe dépend uniquement de $-x$." + "\n"
-    r"$\bullet$ Si $x \in ]-1;0[$, $f'(x) > 0$ (f croissante)." + "\n"
-    r"$\bullet$ Si $x = 0$, $f'(0) = 0$ (Maximum)." + "\n"
-    r"$\bullet$ Si $x > 0$, $f'(x) < 0$ (f décroissante)." + "\n"
-    r"Max : $f(0) = 1 - 0 + \ln(1) = \bf{1}$." + "\n\n"
-    r"$\bf{4.c\ Tangente\ (T)\ en\ x_0 = 1}$" + "\n"
-    r"$f'(1) = -0.5$ et $f(1) = \ln(2) \approx 0.69$." + "\n"
-    r"$y = -0.5(x-1) + 0.69 \Rightarrow \bf{y = -0.5x + 1.19}$."
-)
-ax_text1.text(0, 1, texte_ex1, fontsize=14, verticalalignment='top', linespacing=1.6)
+# Tracer l'asymptote verticale (x=0)
+plt.axvline(x=0, color='red', linestyle='--', label='Asymptote verticale (x=0)')
 
-# --- Tableau de valeurs (Question 5) ---
-# On l'insère sous le texte
-rows_ex1 = ["x", "0.5", "1", "2", "3"]
-vals_ex1 = ["f(x)", "0.91", "0.69", "0.10", "-0.61"]
-table_data_ex1 = [rows_ex1, vals_ex1]
+# Optionnel : Marquer le minimum (x=0.5)
+x_min = 0.5
+y_min = 2*x_min + 1 - np.log(x_min)
+plt.plot(x_min, y_min, 'go', label=f'Minimum ({x_min}, {y_min:.2f})')
 
-# Création du tableau dans la zone texte
-table1 = ax_text1.table(cellText=table_data_ex1, loc='bottom', cellLoc='center', bbox=[0, 0.05, 1, 0.15])
-table1.auto_set_font_size(False)
-table1.set_fontsize(12)
-table1.scale(1, 1.5)
-ax_text1.text(0, 0.22, r"$\bf{5.\ Tableau\ de\ valeurs\ complété :}$", fontsize=12, fontweight='bold')
+# 3. Mise en forme
+plt.title("Courbe de la fonction $f(x) = 2x + 1 - \ln(x)$")
+plt.xlabel("x")
+plt.ylabel("f(x)")
+plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+plt.legend()
 
+# Ajuster les limites pour bien voir la courbe (l'asymptote monte très haut)
+plt.ylim(0, 10)
+plt.xlim(-0.5, 4.5)
 
-# --- Zone Graphique (Courbe) ---
-ax_plot1 = plt.subplot2grid((2, 2), (0, 1)) # Haut Droite
-
-# Données
-x1 = np.linspace(-0.95, 4.5, 500)
-y1 = 1 - x1 + np.log(x1 + 1)
-# Tangente en 1
-xt1 = np.linspace(-0.5, 3.5, 100)
-yt1 = -0.5 * xt1 + (1 - 1 + np.log(2)) + 0.5 
-
-ax_plot1.plot(x1, y1, 'b-', linewidth=2.5, label=r'$(\mathcal{C}) : f(x) = 1 - x + \ln(x+1)$')
-ax_plot1.plot(xt1, yt1, 'r--', linewidth=2, label=r'$(T) : y \approx -0.5x + 1.19$')
-ax_plot1.axvline(x=-1, color='green', linestyle=':', linewidth=2, label='Asymptote x=-1')
-
-# Points du tableau
-x_pts1 = [0.5, 1, 2, 3]
-y_pts1 = [1-x+np.log(x+1) for x in x_pts1]
-ax_plot1.scatter(x_pts1, y_pts1, color='black', zorder=5)
-ax_plot1.scatter([0], [1], color='purple', s=80, zorder=5, label='Max(0,1)')
-
-# Mise en forme
-ax_plot1.set_title("Exercice 1 : Courbe représentative", fontsize=16, fontweight='bold')
-ax_plot1.grid(True, linestyle='--', alpha=0.6)
-ax_plot1.axhline(0, color='black', linewidth=1)
-ax_plot1.axvline(0, color='black', linewidth=1)
-ax_plot1.set_xlim(-1.5, 4.5)
-ax_plot1.set_ylim(-3, 2)
-ax_plot1.legend(fontsize=11)
-
-
-# ==============================================================================
-#                               EXERCICE 2
-# ==============================================================================
-
-# --- Zone de Texte ---
-ax_text2 = plt.subplot2grid((2, 2), (1, 0)) # Bas Gauche
-ax_text2.axis('off')
-
-texte_ex2 = (
-    r"$\bf{EXERCICE\ 2\ :\ CORRECTION\ DÉTAILLÉE}$" + "\n\n"
-    r"$\bf{1.\ Domaine}$ : $D_f = \mathbb{R}$ (polynôme et exponentielle)." + "\n\n"
-    r"$\bf{2.\ Limite\ en\ -\infty}$" + "\n"
-    r"$f(x) = e^x - xe^x - 1$. Or $\lim xe^x = 0$ et $\lim e^x = 0$." + "\n"
-    r"$\lim f(x) = 0 - 0 - 1 = \bf{-1}$. Asymptote horizontale $\bf{y = -1}$." + "\n\n"
-    r"$\bf{3.\ Limite\ en\ +\infty}$ : $\lim (1-x)=-\infty, \lim e^x=+\infty \Rightarrow \bf{-\infty}$." + "\n\n"
-    r"$\bf{4.\ Intersection\ (D)\ y=-1}$" + "\n"
-    r"$(1-x)e^x - 1 = -1 \Leftrightarrow (1-x)e^x = 0 \Leftrightarrow x = 1$. Point $\bf{A(1 ; -1)}$." + "\n\n"
-    r"$\bf{5.\ Dérivée\ et\ Variations}$" + "\n"
-    r"$f'(x) = -1\cdot e^x + (1-x)e^x = e^x(-1+1-x) = \bf{-xe^x}$." + "\n"
-    r"Comme $e^x > 0$, le signe est celui de $-x$." + "\n"
-    r"$\bullet$ Croissante sur $]-\infty; 0[$, Décroissante sur $]0; +\infty[$." + "\n"
-    r"$\bullet$ Max en $x=0$, $f(0) = (1)e^0 - 1 = \bf{0}$." + "\n\n"
-    r"$\bf{6.\ Tangente\ (T)\ en\ x_0 = 1}$" + "\n"
-    r"$f'(1) = -e$ et $f(1) = -1$. $y = -e(x-1)-1 \approx \bf{-2.72x + 1.72}$."
-)
-ax_text2.text(0, 1, texte_ex2, fontsize=14, verticalalignment='top', linespacing=1.6)
-
-# --- Tableau de valeurs (Question 7) ---
-rows_ex2 = ["x", "-3", "-2", "-1", "0", "1", "1.5"]
-vals_ex2 = ["f(x)", "-0.80", "-0.59", "-0.26", "0", "-1", "-3.24"]
-table_data_ex2 = [rows_ex2, vals_ex2]
-
-table2 = ax_text2.table(cellText=table_data_ex2, loc='bottom', cellLoc='center', bbox=[0, 0.05, 1, 0.15])
-table2.auto_set_font_size(False)
-table2.set_fontsize(12)
-table2.scale(1, 1.5)
-ax_text2.text(0, 0.22, r"$\bf{7.\ Tableau\ de\ valeurs\ complété :}$", fontsize=12, fontweight='bold')
-
-
-# --- Zone Graphique (Courbe) ---
-ax_plot2 = plt.subplot2grid((2, 2), (1, 1)) # Bas Droite
-
-# Données
-x2 = np.linspace(-4, 2.2, 500)
-y2 = (1 - x2) * np.exp(x2) - 1
-# Tangente en 1
-xt2 = np.linspace(-0.5, 2.5, 100)
-yt2 = -np.exp(1) * (xt2 - 1) - 1
-
-ax_plot2.plot(x2, y2, 'b-', linewidth=2.5, label=r'$(\mathcal{C}) : f(x) = (1-x)e^x - 1$')
-ax_plot2.plot(xt2, yt2, 'r--', linewidth=2, label=r'$(T) : y \approx -2.72x + 1.72$')
-ax_plot2.axhline(y=-1, color='green', linestyle=':', linewidth=2, label='Asymptote y=-1')
-
-# Points du tableau
-x_pts2 = [-3, -2, -1, 0, 1, 1.5]
-y_pts2 = [(1-x)*np.exp(x)-1 for x in x_pts2]
-ax_plot2.scatter(x_pts2, y_pts2, color='black', zorder=5)
-ax_plot2.scatter([1], [-1], color='purple', s=80, zorder=5, label='A(1, -1)')
-
-# Mise en forme
-ax_plot2.set_title("Exercice 2 : Courbe représentative", fontsize=16, fontweight='bold')
-ax_plot2.grid(True, linestyle='--', alpha=0.6)
-ax_plot2.axhline(0, color='black', linewidth=1)
-ax_plot2.axvline(0, color='black', linewidth=1)
-ax_plot2.set_xlim(-4, 2.5)
-ax_plot2.set_ylim(-6, 2)
-ax_plot2.legend(fontsize=11)
-
-# ==============================================================================
-#                               SAUVEGARDE
-# ==============================================================================
-
-filename = "correction_complete_organisee.jpg"
-plt.savefig(filename, dpi=200, bbox_inches='tight')
-print(f"L'image '{filename}' a été générée avec succès avec les tableaux complétés.")
+# 4. Enregistrer l'image
+nom_fichier = 'courbe_fonction.jpg'
+plt.savefig(nom_fichier, dpi=300)
+print(f"L'image a été enregistrée sous le nom : {nom_fichier}")
