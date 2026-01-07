@@ -55,7 +55,7 @@ texte_ex2 = (
     r"Branche parabolique direction $(Oy)$." + "\n\n"
     
     r"$\bf{4.\ Intersection\ avec\ y = -1}$" + "\n"
-    r"$(1-x)e^x - 1 = -1 \Leftrightarrow (1-x)e^x = 0$." + "\n"
+    r"$(1-x)e^x - 1 = -1 \iff (1-x)e^x = 0$." + "\n"
     r"$e^x \neq 0 \Rightarrow 1-x=0 \Rightarrow x=1$. Point A(1 ; -1)." + "\n\n"
     
     r"$\bf{5.\ Dérivée\ et\ Variation}$" + "\n"
@@ -148,3 +148,4 @@ ax_plot2.legend(fontsize=12)
 filename = "correction_complet.jpg"
 plt.savefig(filename, dpi=150, bbox_inches='tight')
 print(f"L'image '{filename}' a été créée avec succès.")
+plt.show()
