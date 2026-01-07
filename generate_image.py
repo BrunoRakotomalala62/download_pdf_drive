@@ -1,88 +1,65 @@
-from PIL import Image, ImageDraw, ImageFont
+import matplotlib.pyplot as plt
+from matplotlib import rc
 
-# Create a blank white image
-width, height = 800, 1100
-image = Image.new('RGB', (width, height), 'white')
-draw = ImageDraw.Draw(image)
+def generate_math_image():
+    # Configuration pour le rendu mathématique (LaTeX)
+    # Matplotlib utilise son propre moteur mathtext par défaut
+    
+    content = [
+        (r"$\mathbf{CORRECTION\ DE\ L'EXERCICE}$", 'blue', 20, 'center'),
+        ("", 'black', 10, 'left'),
+        (r"$\mathbf{1)\ a.\ Montrons\ par\ récurrence\ que\ } U_n < 6 :$", 'red', 14, 'left'),
+        (r"$\bullet\ \mathrm{Initialisation\ :\ Pour\ } n=0, U_0 = 2. \mathrm{\ Comme\ } 2 < 6, \mathrm{\ c'est\ vrai.}$", 'black', 12, 'left'),
+        (r"$\bullet\ \mathrm{Hérédité\ :\ Supposons\ que\ pour\ un\ entier\ } n \mathrm{\ donné,\ } U_n < 6.$", 'black', 12, 'left'),
+        (r"$\quad \frac{1}{2}U_n < 3 \implies \frac{1}{2}U_n + 3 < 6 \implies U_{n+1} < 6.$", 'black', 12, 'left'),
+        (r"$\bullet\ \mathrm{Conclusion\ :\ Pour\ tout\ } n \in \mathbb{N}, U_n < 6.$", 'black', 12, 'left'),
+        ("", 'black', 10, 'left'),
+        (r"$\mathbf{1)\ b.\ Calcul\ de\ } U_{n+1} - U_n \mathbf{\ et\ monotonie\ :}$", 'red', 14, 'left'),
+        (r"$U_{n+1} - U_n = \left(\frac{1}{2}U_n + 3\right) - U_n = -\frac{1}{2}U_n + 3$", 'black', 12, 'left'),
+        (r"$\phantom{U_{n+1} - U_n} = \frac{6 - U_n}{2}$", 'black', 12, 'left'),
+        (r"$\mathrm{Or,\ } U_n < 6 \implies 6 - U_n > 0. \mathrm{\ Le\ résultat\ est\ positif.}$", 'black', 12, 'left'),
+        (r"$\mathrm{Donc\ } (U_n) \mathrm{\ est\ strictement\ croissante.}$", 'black', 12, 'left'),
+        ("", 'black', 10, 'left'),
+        (r"$\mathbf{1)\ c.\ Convergence\ :}$", 'red', 14, 'left'),
+        (r"$(U_n) \mathrm{\ est\ croissante\ et\ majorée\ par\ 6.\ Donc\ } (U_n) \mathrm{\ est\ convergente.}$", 'black', 12, 'left'),
+        ("", 'black', 15, 'left'),
+        (r"$\mathbf{2)\ On\ pose\ } V_n = U_n - 6.$", 'blue', 14, 'left'),
+        ("", 'black', 5, 'left'),
+        (r"$\mathbf{2)\ a.\ Nature\ de\ la\ suite\ } (V_n) :$", 'red', 14, 'left'),
+        (r"$V_{n+1} = U_{n+1} - 6 = \left(\frac{1}{2}U_n + 3\right) - 6 = \frac{1}{2}U_n - 3$", 'black', 12, 'left'),
+        (r"$V_{n+1} = \frac{1}{2}(U_n - 6) = \frac{1}{2}V_n$", 'black', 12, 'left'),
+        (r"$\mathrm{C'est\ une\ suite\ géométrique\ de\ raison\ } q = \frac{1}{2}.$", 'black', 12, 'left'),
+        ("", 'black', 10, 'left'),
+        (r"$\mathbf{2)\ b.\ Expression\ de\ } V_n \mathbf{\ et\ } U_n :$", 'red', 14, 'left'),
+        (r"$\mathrm{Premier\ terme\ :\ } V_0 = U_0 - 6 = 2 - 6 = -4.$", 'black', 12, 'left'),
+        (r"$\mathrm{Terme\ général\ :\ } V_n = V_0 \times q^n = -4 \times \left(\frac{1}{2}\right)^n.$", 'black', 12, 'left'),
+        (r"$\mathrm{Comme\ } V_n = U_n - 6, \mathrm{\ alors\ } U_n = V_n + 6.$", 'black', 12, 'left'),
+        (r"$U_n = 6 - 4 \times \left(\frac{1}{2}\right)^n.$", 'black', 12, 'left'),
+        ("", 'black', 10, 'left'),
+        (r"$\mathbf{2)\ c.\ Limite\ de\ } U_n :$", 'red', 14, 'left'),
+        (r"$\mathrm{On\ sait\ que\ } -1 < \frac{1}{2} < 1, \mathrm{\ donc\ } \lim_{n \to +\infty} \left(\frac{1}{2}\right)^n = 0.$", 'black', 12, 'left'),
+        (r"$\lim_{n \to +\infty} U_n = 6 - 4 \times 0 = 6.$", 'black', 12, 'left'),
+        (r"$\mathbf{\lim_{n \to +\infty} U_n = 6}$", 'blue', 16, 'center'),
+    ]
 
-# Try to load a font, otherwise use default
-try:
-    # Attempting to load a standard font likely to be on linux/hosting environments
-    font_title = ImageFont.truetype("DejaVuSans-Bold.ttf", 28)
-    font_text = ImageFont.truetype("DejaVuSans.ttf", 18)
-    font_math = ImageFont.truetype("DejaVuSans-Oblique.ttf", 18)
-except IOError:
-    # Fallback to default if TTF not found
-    font_title = ImageFont.load_default()
-    font_text = ImageFont.load_default()
-    font_math = ImageFont.load_default()
+    fig, ax = plt.subplots(figsize=(8, 11))
+    ax.axis('off')
+    
+    y_pos = 0.95
+    for text, color, size, align in content:
+        if text == "":
+            y_pos -= size / 1000
+            continue
+            
+        x_pos = 0.5 if align == 'center' else 0.05
+        ax.text(x_pos, y_pos, text, color=color, fontsize=size, 
+                ha=align, va='top', transform=ax.transAxes)
+        y_pos -= (size + 10) / 1000
 
-# Colors
-black = (0, 0, 0)
-blue = (0, 0, 150)
-red = (200, 0, 0)
+    plt.tight_layout()
+    plt.savefig("correction_exercice_suites.jpg", dpi=200, bbox_inches='tight')
+    plt.close()
+    print("L'image avec rendu mathématique a été générée : correction_exercice_suites.jpg")
 
-# Content layout
-margin = 50
-y_cursor = 50
-line_height = 30
-
-# Helper function to write text
-def write_line(text, font, color, y, offset=0):
-    draw.text((margin + offset, y), text, font=font, fill=color)
-    return y + line_height
-
-# --- Header ---
-y_cursor = write_line("CORRECTION DE L'EXERCICE", font_title, blue, y_cursor)
-y_cursor += 10
-
-# --- Question 1a ---
-y_cursor = write_line("1) a. Montrons par récurrence que Un < 6 :", font_text, red, y_cursor)
-y_cursor = write_line("- Initialisation : Pour n=0, U0 = 2. Comme 2 < 6, c'est vrai.", font_text, black, y_cursor)
-y_cursor = write_line("- Hérédité : Supposons Un < 6.", font_text, black, y_cursor)
-y_cursor = write_line("  (1/2)Un < 3  =>  (1/2)Un + 3 < 6  =>  Un+1 < 6.", font_text, black, y_cursor, 20)
-y_cursor = write_line("- Conclusion : Pour tout n, Un < 6.", font_text, black, y_cursor)
-y_cursor += 10
-
-# --- Question 1b ---
-y_cursor = write_line("1) b. Calcul de Un+1 - Un et monotonie :", font_text, red, y_cursor)
-y_cursor = write_line("Un+1 - Un = (1/2)Un + 3 - Un = -(1/2)Un + 3", font_text, black, y_cursor)
-y_cursor = write_line("          = (6 - Un) / 2", font_text, black, y_cursor)
-y_cursor = write_line("Or, Un < 6 donc 6 - Un > 0. Le résultat est positif.", font_text, black, y_cursor)
-y_cursor = write_line("Donc (Un) est strictement croissante.", font_text, black, y_cursor)
-y_cursor += 10
-
-# --- Question 1c ---
-y_cursor = write_line("1) c. Convergence :", font_text, red, y_cursor)
-y_cursor = write_line("(Un) est croissante et majorée par 6.", font_text, black, y_cursor)
-y_cursor = write_line("Donc (Un) est convergente.", font_text, black, y_cursor)
-y_cursor += 15
-
-# --- Question 2 ---
-y_cursor = write_line("2) On pose Vn = Un - 6.", font_text, blue, y_cursor)
-y_cursor += 5
-
-# --- Question 2a ---
-y_cursor = write_line("2) a. Nature de la suite (Vn) :", font_text, red, y_cursor)
-y_cursor = write_line("Vn+1 = Un+1 - 6 = ((1/2)Un + 3) - 6 = (1/2)Un - 3", font_text, black, y_cursor)
-y_cursor = write_line("Vn+1 = (1/2)(Un - 6) = (1/2)Vn", font_text, black, y_cursor)
-y_cursor = write_line("C'est une suite géométrique de raison q = 1/2.", font_text, black, y_cursor)
-y_cursor += 10
-
-# --- Question 2b ---
-y_cursor = write_line("2) b. Expression de Vn et Un :", font_text, red, y_cursor)
-y_cursor = write_line("Premier terme : V0 = U0 - 6 = 2 - 6 = -4.", font_text, black, y_cursor)
-y_cursor = write_line("Terme général : Vn = V0 * q^n = -4 * (1/2)^n.", font_text, black, y_cursor)
-y_cursor = write_line("Comme Vn = Un - 6, alors Un = Vn + 6.", font_text, black, y_cursor)
-y_cursor = write_line("Un = 6 - 4 * (1/2)^n.", font_text, black, y_cursor)
-y_cursor += 10
-
-# --- Question 2c ---
-y_cursor = write_line("2) c. Limite de Un :", font_text, red, y_cursor)
-y_cursor = write_line("On sait que -1 < 1/2 < 1, donc la limite de (1/2)^n est 0.", font_text, black, y_cursor)
-y_cursor = write_line("Lim Un = 6 - 4 * 0 = 6.", font_text, black, y_cursor)
-y_cursor = write_line("Lim Un = 6.", font_title, blue, y_cursor)
-
-# Save image
-image.save("correction_exercice_suites.jpg")
-print("L'image a été enregistrée avec succès sous le nom 'correction_exercice_suites.jpg'.")
+if __name__ == "__main__":
+    generate_math_image()
