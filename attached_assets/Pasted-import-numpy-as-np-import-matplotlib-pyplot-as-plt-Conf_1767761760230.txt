@@ -71,7 +71,6 @@ y_tangente2 = df2(x0_2) * (x2 - x0_2) + f2(x0_2)
 
 # Tracé
 ax2.plot(x2, y2, label=r'$(\mathcal{C}): f(x) = (1-x)e^x - 1$', color='blue', linewidth=2)
-ax2.plot(x2, y2, label=r'$(\mathcal{C}): f(x) = (1-x)e^x - 1$', color='blue', linewidth=2)
 ax2.plot(x2, y_tangente2, label=r'$(T): y = -ex + e - 1$', color='red', linestyle='--')
 
 # Asymptote horizontale y = -1
@@ -97,3 +96,4 @@ ax2.set_xlim(-4, 2.5)
 # Sauvegarde
 plt.savefig('correction_mathematiques.jpg', dpi=300, bbox_inches='tight')
 print("L'image 'correction_mathematiques.jpg' a été générée avec succès.")
+plt.show()
