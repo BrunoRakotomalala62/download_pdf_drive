@@ -54,7 +54,7 @@ def create_solution_image():
         r"$\bf{c) \ Limite \ de \ U_n}$",
         r"Comme $-1 < \frac{1}{2} < 1$, alors $\lim_{n \to +\infty} (\frac{1}{2})^n = 0$.",
         r"D'où : $\lim_{n \to +\infty} U_n = -4(0) + 6 = 6$.",
-        r"$\bf{\lim U_n = 6}$"
+        r"$\boxed{\lim U_n = 6}$"
     ]
 
     # Position verticale de départ (de 1.0 haut à 0.0 bas)
@@ -73,5 +73,8 @@ def create_solution_image():
     plt.savefig(filename, dpi=150, bbox_inches='tight', pad_inches=0.5)
     print(f"L'image a été générée avec succès : {filename}")
     
+    # Affichage optionnel pour vérifier
+    # plt.show()
+
 if __name__ == "__main__":
     create_solution_image()
